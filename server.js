@@ -24,7 +24,7 @@ const db = mysql.createConnection(
 		host:'localhost',
 		user:'root',
 		password:'waheguru',
-		database:'election'
+		database:'candidate'
 	},
 	console.log('Connected to election database ')
 );
@@ -35,7 +35,12 @@ const db = mysql.createConnection(
 
 //to display all candaiates in express.js //connecting to display the route
 app.get('/api/candidates',(req,res)=>{
-	const sql = `SELECT * FROM candidates`;
+	const sql = `SELECT candidates.*, parties.name
+	AS PARTY_NAME
+	FROM candidates
+	LEFT JOIN parties
+	ON candidates.party_id = parties.id
+	`;
 
 	db.query(sql,(err,rows)=>{
 		if (err){
@@ -64,7 +69,11 @@ app.get('/api/candidates',(req,res)=>{
 //to display single candidate via API endpoint
 
 app.get('/api/candidate/:id', (req,res)=>{
-const sql = `SELECT * FROM candidates WHERE id =?`;
+const sql = `SELECT candidates.*, parties.name
+AS party_name
+FROM candidates
+ON candidates.party_id = parties.id
+WHERE candidates.id =?`;
 const params = [req.params.id];
 
 db.query(sql,params,(err,row)=>{
